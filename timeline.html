@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>源流 - 千秋遗卷 · 历史脉络</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #d4d4d4; overflow-x: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cea262; border-radius: 2px; }
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+        
+        /* 时间轴核心样式 */
+        .timeline-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, #cea262, transparent); transform: translateX(-50%); }
+        .node-content { opacity: 0; transform: translateY(30px); transition: all 1.2s cubic-bezier(0.2, 1, 0.2, 1); }
+        .node-content.visible { opacity: 1; transform: translateY(0); }
+        
+        /* 文献引用样式 */
+        .quote-box { background: rgba(206, 162, 98, 0.05); border-left: 2px solid #cea262; padding: 1.5rem; margin: 1rem 0; font-style: italic; }
+        .praise-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .praise-card { border: 1px solid rgba(206, 162, 98, 0.2); padding: 1rem; background: rgba(255,255,255,0.02); }
+        
+        /* 竖排文字 */
+        .vertical-text { writing-mode: vertical-rl; text-orientation: mixed; line-height: 1.8; letter-spacing: 0.2em; }
+    </style>
+</head>
+<body class="flex">
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- 左侧固定导航栏 -->
+    <aside class="w-[20%] h-full border-r border-neutral-800 bg-[#0a0a0a]/90 backdrop-blur-sm fixed left-0 top-0 z-50 flex flex-col p-8">
+        <div class="mb-12">
+            <a href="index.html" class="text-sm tracking-[0.3em] text-[#cea262] mb-8 inline-block hover:text-white transition border-b border-[#cea262]/30 pb-1">← 返回序厅</a>
+            <h1 class="text-4xl font-bold tracking-widest text-white">源流</h1>
+            <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase mt-2">Historical Genealogy</p>
+        </div>
+        <nav class="space-y-4 text-xs tracking-widest text-neutral-500">
+            <a href="#han" class="block hover:text-[#cea262] transition">壹 · 汉代起源</a>
+            <a href="#jin" class="block hover:text-[#cea262] transition">贰 · 晋代奠基</a>
+            <a href="#mingqing" class="block hover:text-[#cea262] transition">叁 · 明清爆发</a>
+            <a href="#modern" class="block hover:text-[#cea262] transition">肆 · 现代重构</a>
+            <a href="#now" class="block hover:text-[#cea262] transition text-[#cea262]">伍 · 数字新生</a>
+        </nav>
+        <!-- 侧边栏底部装饰文字 -->
+        <div class="mt-auto text-[11px] text-neutral-600 leading-relaxed italic border-t border-neutral-800 pt-6">
+            “古图之学，由此而绝。<br>
+            记录每一处文明的刻痕。”
+        </div>
+    </aside>
+
+    <!-- 右侧滚动内容区 -->
+    <main class="w-[80%] ml-[20%] h-full overflow-y-auto custom-scrollbar p-20 relative">
+        <div class="max-w-5xl mx-auto relative">
+            <div class="timeline-line"></div>
+
+            <!-- 壹 · 汉代：鸿蒙初开 -->
+            <section id="han" class="node-content mb-40 relative">
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div class="md:w-1/2">
+                        <span class="text-[#cea262] text-xs mb-4 block tracking-[0.5em]">CHAPTER 01</span>
+                        <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">汉 · 鸿蒙初开</h2>
+                        <div class="quote-box text-neutral-300">
+                            “禹别九州，任土作贡，而益等类物善恶，著《山海经》，皆圣贤之遗事，古文之著明者也。”
+                            <p class="text-right text-xs mt-2 text-neutral-500">— 刘歆《上山海经表》</p>
+                        </div>
+                        <div class="space-y-6 text-sm leading-loose text-neutral-400">
+                            <p>《山海经》在汉代不仅是地理志，更是验证“祯祥变怪”的奇书。史载东方朔曾凭此书识破汉武帝时进献的“异鸟”食性，朝士由此多奇此书。</p>
+                            <div class="bg-neutral-900/50 p-6 border border-neutral-800">
+                                <h4 class="text-white mb-2 font-bold">【古图遗恨】</h4>
+                                <p class="text-xs">马昌仪指出：“古图之学，由此而绝”。汉代以前虽有古图，但六朝后已佚散。今日所见多为明代后之重构。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 relative">
+                        <img src="汉代.webp" class="w-full grayscale opacity-60 hover:grayscale-0 transition duration-1000 border border-neutral-800">
+                        <div class="absolute -bottom-6 -right-6 vertical-text text-[#cea262] bg-black/80 p-4 border border-[#cea262]/30 text-xs">
+                            造型拙朴夸张 · 线条刚劲流畅
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 贰 · 晋代：奠基之作 -->
+            <section id="jin" class="node-content mb-40 relative">
+                <div class="flex flex-col md:flex-row-reverse gap-12 items-start">
+                    <div class="md:w-1/2">
+                        <span class="text-[#cea262] text-xs mb-4 block tracking-[0.5em]">CHAPTER 02</span>
+                        <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">晋 · 奠基之作</h2>
+                        <p class="text-sm leading-loose text-neutral-400 mb-8">
+                            东晋学者<strong class="text-[#cea262]">郭璞</strong>为《山海经》作注并创《图赞》，使此书从边缘文化正式进入主流学术视野。
+                        </p>
+                        <div class="praise-grid">
+                            <div class="praise-card">
+                                <h5 class="text-[#cea262] text-xs mb-2">〈 鹿蜀赞 〉</h5>
+                                <p class="text-[11px] leading-relaxed italic text-neutral-500">马质虎文，攘首吟鸣。矫矫腾群，佩其皮毛，子孙如云。</p>
+                            </div>
+                            <div class="praise-card">
+                                <h5 class="text-[#cea262] text-xs mb-2">〈 凤凰赞 〉</h5>
+                                <p class="text-[11px] leading-relaxed italic text-neutral-500">凤凰灵鸟，实冠羽群。八象其体，五德其文。</p>
+                            </div>
+                            <div class="praise-card">
+                                <h5 class="text-[#cea262] text-xs mb-2">〈 狌狌赞 〉</h5>
+                                <p class="text-[11px] leading-relaxed italic text-neutral-500">狌狌似狐，走立行伏。怀水挺方，涎腥明目。</p>
+                            </div>
+                            <div class="praise-card">
+                                <h5 class="text-[#cea262] text-xs mb-2">〈 九尾狐赞 〉</h5>
+                                <p class="text-[11px] leading-relaxed italic text-neutral-500">厥声如诃，厥形如鸠。佩之辨惑，出自青丘。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <img src="晋代.png" class="w-full opacity-60 border border-neutral-800">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 叁 · 明清：图像爆发 -->
+            <section id="mingqing" class="node-content mb-40 relative">
+                <div class="w-full">
+                    <span class="text-[#cea262] text-xs mb-4 block tracking-[0.5em] text-center">CHAPTER 03</span>
+                    <h2 class="text-5xl font-bold text-white mb-12 tracking-tighter text-center">明清 · 图像爆发</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <div class="bg-neutral-900/30 p-8 border border-neutral-800">
+                            <h4 class="text-[#cea262] text-xl mb-4 font-bold border-b border-neutral-800 pb-2">明代版画 · 创作期</h4>
+                            <ul class="text-sm space-y-4 text-neutral-400">
+                                <li><strong class="text-neutral-200">特征：</strong> 线条粗犷豪放，造型夸张，“向壁虚造”。</li>
+                                <li><strong class="text-neutral-200">代表：</strong> 胡文焕《山海经图》、蒋应镐《全像》</li>
+                                <li><p class="italic text-xs">“胥是模糊影响……颇富想象之力。” —— 郑振铎评</p></li>
+                            </ul>
+                        </div>
+                        <div class="bg-neutral-900/30 p-8 border border-neutral-800">
+                            <h4 class="text-[#cea262] text-xl mb-4 font-bold border-b border-neutral-800 pb-2">清代版画 · 精致期</h4>
+                            <ul class="text-sm space-y-4 text-neutral-400">
+                                <li><strong class="text-neutral-200">特征：</strong> 线条细腻工整，注重背景氛围与写实感。</li>
+                                <li><strong class="text-neutral-200">代表：</strong> 吴任臣《广注》、汪绂《山海经存》</li>
+                                <li><p class="italic text-xs">“所志之博，都非后人所辨。” —— 陈一中评</p></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <img src="明清.jpeg" class="w-full h-80 object-cover opacity-40 grayscale hover:grayscale-0 transition duration-700 border border-neutral-800">
+                </div>
+            </section>
+
+            <!-- 肆 · 现代：学术重构 -->
+            <section id="modern" class="node-content mb-40 relative">
+                <div class="flex flex-col md:flex-row gap-16 items-center">
+                    <div class="md:w-3/5">
+                        <span class="text-[#cea262] text-xs mb-4 block tracking-[0.5em]">CHAPTER 04</span>
+                        <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">现代 · 学术重构</h2>
+                        <div class="quote-box text-neutral-300 border-[#cea262]">
+                            “《山海经》是一部奇书，好像是一块五彩缤纷的宝石……它是神话之渊府，地理之雏形，巫术之宝典，博物之志书。”
+                            <p class="text-right text-xs mt-2 text-neutral-500">— 袁珂《山海经校注》</p>
+                        </div>
+                        <p class="text-sm leading-loose text-neutral-400 mt-6">
+                            20世纪以来，以袁珂为代表的学者将《山海经》从考据学引向神话学。CNKI数据显示，1990年代起相关研究呈爆发式增长，涵盖考古、民俗、图像学及数字人文领域。
+                        </p>
+                    </div>
+                    <div class="md:w-2/5">
+                        <img src="现代.png" class="w-full opacity-60 rounded-sm shadow-2xl">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 伍 · 当代：数字新生 -->
+            <section id="now" class="node-content mb-40 relative">
+                <div class="w-full border-2 border-[#cea262]/20 bg-[#cea262]/5 p-12 rounded-lg">
+                    <span class="text-[#cea262] text-xs mb-4 block tracking-[0.5em] text-center">CHAPTER 05</span>
+                    <h2 class="text-6xl font-black text-[#cea262] mb-12 tracking-widest text-center">数字新生</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="space-y-8 text-sm text-neutral-300">
+                            <p class="leading-loose">
+                                <strong>从文字到“数字生命”：</strong> 当代《山海经》正通过数字化技术重构。古籍数字化让文献“活起来”，图像数据库让图像“可检索”，AI创作让志怪“可生成”。
+                            </p>
+                            <ul class="space-y-4">
+                                <li class="flex items-start gap-3"><span class="text-[#cea262]">●</span> <span>国家图书馆《山海经》知识库（shj.nlc.cn）收录92种古籍，免费向公众开放，让千年古本触手可及。</span></li>
+                                <li class="flex items-start gap-3"><span class="text-[#cea262]">●</span> <span>学者马昌仪《古本山海经图说》收录16个版本、1600余幅插图，构建起山海经图像谱系。</span></li>
+                                <li class="flex items-start gap-3"><span class="text-[#cea262]">●</span> <span>当代画师借助数字绘画工具，将《山海经》异兽以全新风格呈现，古老志怪在数字时代获得新生。</span></li>
+                            </ul>
+                        </div>
+                        <div class="relative group">
+                            <!-- 这里是你规划的开发逻辑图 -->
+                            <img src="当代.png" class="w-full border border-[#cea262]/50 shadow-2xl group-hover:scale-105 transition duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="py-20 text-center text-[10px] text-neutral-600 tracking-[1em] uppercase">
+            History Never Ends · 源远流长
+        </footer>
+    </main>
+
+    <script>
+        // 滚动浮现动画
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.node-content').forEach(node => observer.observe(node));
+
+        // 金色粒子特效
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        let particles = [];
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX; mouse.y = e.clientY;
+            for (let i = 0; i < 2; i++) particles.push(new Particle());
+        });
+        class Particle {
+            constructor() {
+                this.x = mouse.x; this.y = mouse.y;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.life = 1;
+            }
+            update() { this.x += this.speedX; this.y += this.speedY; this.life -= 0.02; }
+            draw() {
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.fillStyle = `rgba(206, 162, 98, ${this.life})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].life <= 0) { particles.splice(i, 1); i--; }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

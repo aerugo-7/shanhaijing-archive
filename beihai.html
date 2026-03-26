@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北海·大荒北经 - 山海志怪</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入思源宋体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #d4d4d4; overflow: hidden; }
+        
+        /* 优雅的滚动条 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #60a5fa; border-radius: 2px; } /* 北海用蓝色滚动条 */
+        
+        /* 🔵 北海专属：蓝色水系呼吸光点 */
+        .dot-beihai { animation: ping-blue 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping-blue { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.7); } 
+            70% { box-shadow: 0 0 0 15px rgba(96, 165, 250, 0); } 
+        }
+
+        /* 坐标点悬停放大效果 */
+        .marker-group { transition: transform 0.3s ease; cursor: pointer; }
+        .marker-group:hover { transform: translate(-50%, -50%) scale(1.3) !important; z-index: 50; }
+        .marker-label { transition: opacity 0.3s ease; }
+        .marker-group:hover .marker-label { opacity: 1; }
+    </style>
+</head>
+<body class="w-screen h-screen flex relative">
+    <canvas id="particle-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
+    <!-- ================= 1. 左侧：文本与介绍区 (占宽 30%) ================= -->
+    <aside class="w-[30%] h-full border-r border-blue-900/30 bg-[#0a0a0a] flex flex-col p-10 z-20 shadow-[5px_0_30px_rgba(0,0,0,0.8)]">
+        
+        <!-- 返回按钮 -->
+        <a href="map.html" class="text-sm tracking-[0.2em] text-blue-400 mb-12 inline-block hover:text-white transition border-b border-blue-400/30 pb-1 self-start">
+            ← 返回大荒罗盘
+        </a>
+
+        <!-- 标题 -->
+        <div class="mb-10">
+            <span class="text-xs text-blue-500 tracking-[0.3em] uppercase block mb-2">区域档案 01</span>
+            <h1 class="text-4xl font-bold tracking-widest text-white mb-4">北海·大荒北经</h1>
+            <p class="text-sm text-neutral-500 tracking-widest">海外北经 / 极寒之域</p>
+        </div>
+
+        <!-- 区域介绍 (可滚动) -->
+        <div class="flex-grow overflow-y-auto custom-scrollbar pr-4 text-sm leading-loose text-neutral-400 space-y-6">
+            <p class="border-l-2 border-blue-500/50 pl-4 text-neutral-300">
+                北海之内，有山名曰北极天柜。北方属水，色黑，为极寒之地。有神名烛龙，视为昼，暝为夜，吹为冬，呼为夏。夸父逐日，道渴而死，弃杖化为邓林。
+            </p>
+            <p>
+                这里是神话中最为荒凉与神秘的地带。生存于此的方国子民，多有着超越常人的奇异体质，或死而复生，或身形特异。
+            </p>
+            <div class="p-4 bg-blue-900/10 border border-blue-900/30 rounded text-xs">
+                <span class="text-blue-400 font-bold">交互提示：</span><br>
+                请在右侧局部地图上，点击蓝色水幕光点，查阅对应方国与异兽卷宗。
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= 2. 右侧：放大版局部地图与交互点 (占宽 70%) ================= -->
+    <main class="w-[70%] h-full bg-[#050505] relative p-8 flex items-center justify-center">
+        
+        <!-- 地图画框容器 -->
+        <div class="relative w-full h-full max-w-6xl max-h-[85vh] border border-blue-900/50 rounded-xl overflow-hidden shadow-2xl bg-neutral-900">
+            
+            <!-- [!!!需要替换!!!] 请把 src 换成你截取的北海局部放大地图 -->
+            <img src="北海.png" alt="北海局部地图" class="absolute inset-0 w-full h-full object-cover opacity-60">
+            
+            <!-- 暗色渐变蒙版，让发光点更显眼 -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/30 to-[#0a0a0a]/80 pointer-events-none"></div>
+
+            <!-- ======== 坐标光点阵列 (根据你的 ASCII 图排布) ======== -->
+            <!-- 所有的 top 和 left 百分比都可以自由修改，以对准你地图上的具体位置 -->
+
+            <!-- 1. 一目国 (左上) -->
+            <div class="marker-group absolute top-[20%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('一目国', '无', '国民一目在面中央，无特定动物关联。图为一目民。', '一目民.webp')">
+                <div class="w-4 h-4 bg-blue-400 rounded-full dot-beihai shadow-[0_0_15px_#60a5fa]"></div>
+                <span class="marker-label opacity-0 text-blue-200 text-xs tracking-widest mt-2 font-bold drop-shadow-md">【一目国】</span>
+            </div>
+
+            <!-- 2. 无启国 (右上) -->
+            <div class="marker-group absolute top-[20%] left-[70%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('无启国', '无', '国民无男女，死而复生，无动物特征。图为无启民', '无启民.webp')">
+                <div class="w-4 h-4 bg-blue-400 rounded-full dot-beihai shadow-[0_0_15px_#60a5fa]"></div>
+                <span class="marker-label opacity-0 text-blue-200 text-xs tracking-widest mt-2 font-bold drop-shadow-md">【无启国】</span>
+            </div>
+
+            <!-- 3. 夸父国 (中左) -->
+            <div class="marker-group absolute top-[45%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('夸父国', '蛇', '夸父国人为巨人，右手操青蛇，左手操黄蛇，蛇为其标志。', '夸父.png')">
+                <div class="w-5 h-5 bg-blue-300 rounded-full dot-beihai shadow-[0_0_20px_#93c5fd]"></div>
+                <span class="marker-label opacity-0 text-blue-100 text-sm tracking-widest mt-2 font-bold drop-shadow-md">【夸父国】</span>
+            </div>
+
+            <!-- 4. 烛龙 (中右 - 重点神话场域) -->
+            <div class="marker-group absolute top-[45%] left-[75%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('烛龙', '神祇', '钟山之神，名曰烛阴，视为昼，瞑为夜，吹为冬，呼为夏。', '烛龙.webp')">
+                <div class="w-6 h-6 bg-white rounded-full dot-beihai shadow-[0_0_30px_#ffffff]"></div>
+                <span class="marker-label opacity-0 text-blue-100 text-sm tracking-widest mt-2 font-bold drop-shadow-md">烛龙</span>
+            </div>
+
+            <!-- 5. 深目民国 (下左) -->
+            <div class="marker-group absolute top-[70%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('深目民国', '无', '国民举一手一目，无动物关联。图为深目民', '深目民.png')">
+                <div class="w-4 h-4 bg-blue-400 rounded-full dot-beihai shadow-[0_0_15px_#60a5fa]"></div>
+                <span class="marker-label opacity-0 text-blue-200 text-xs tracking-widest mt-2 font-bold drop-shadow-md">【深目民国】</span>
+            </div>
+
+            <!-- 6. 无肠国 (下右) -->
+            <div class="marker-group absolute top-[70%] left-[75%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('无肠国', '无', '国民长而无肠，无动物特征。图为无肠民', '无肠民.png')">
+                <div class="w-4 h-4 bg-blue-400 rounded-full dot-beihai shadow-[0_0_15px_#60a5fa]"></div>
+                <span class="marker-label opacity-0 text-blue-200 text-xs tracking-widest mt-2 font-bold drop-shadow-md">【无肠国】</span>
+            </div>
+
+            <!-- 7. 聂耳国 (最下方居中) -->
+            <div class="marker-group absolute top-[85%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                 onclick="showDossier('聂耳国', '文虎', '聂耳国人使两文虎（有花纹的虎），虎为其役使之兽。', '文虎.png')">
+                <div class="w-4 h-4 bg-blue-400 rounded-full dot-beihai shadow-[0_0_15px_#60a5fa]"></div>
+                <span class="marker-label opacity-0 text-blue-200 text-xs tracking-widest mt-2 font-bold drop-shadow-md">【聂耳国】</span>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ================= 3. 卷宗弹窗 (Modal) ================= -->
+    <div id="dossier" class="fixed inset-0 bg-black/90 z-50 justify-center items-center p-8 hidden transition-opacity duration-300" onclick="hideDossier()">
+        <div class="bg-neutral-900/90 backdrop-blur-xl border border-blue-900/50 w-full max-w-4xl h-[60vh] flex rounded-lg shadow-[0_0_50px_rgba(0,0,0,1)] overflow-hidden transition-all duration-300 opacity-0 scale-95" onclick="event.stopPropagation()">
+            
+            <!-- 左侧：图像占位区 -->
+            <div class="w-1/2 h-full bg-black relative flex justify-center items-center overflow-hidden border-r border-neutral-800">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+                <!-- 这里的 src 会被 JS 自动替换为你配置的图片 -->
+                <img id="dossier-image" src="" alt="志怪图像" class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            </div>
+
+            <!-- 右侧：详细数据区 -->
+            <div class="w-1/2 p-10 flex flex-col relative">
+                <!-- 关闭按钮 -->
+                <button onclick="hideDossier()" class="absolute top-6 right-6 text-neutral-500 hover:text-white transition text-xl">✕</button>
+                
+                <span class="text-blue-500 text-xs tracking-[0.2em] mb-2 uppercase">大荒档案</span>
+                <h3 id="dossier-title" class="text-4xl font-bold text-white mb-6 tracking-wider"></h3>
+                
+                <!-- 结构化数据展示 -->
+                <div class="mb-6 border-b border-neutral-800 pb-4 flex gap-4">
+                    <div class="bg-neutral-800 px-3 py-1 rounded text-xs text-neutral-400">
+                        代表动物: <span id="dossier-animal" class="text-blue-300 font-bold ml-1"></span>
+                    </div>
+                </div>
+
+                <div class="flex-grow overflow-y-auto custom-scrollbar pr-2">
+                    <p class="text-neutral-400 text-xs tracking-widest mb-2 border-l-2 border-blue-500 pl-2">文献记载</p>
+                    <p id="dossier-text" class="text-neutral-300 leading-loose text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JavaScript 交互 ================= -->
+<!-- ================= JavaScript 交互 ================= -->
+    <script>
+        // --- 1. 卷宗弹窗逻辑 ---
+        const dossier = document.getElementById('dossier');
+        const dossierTitle = document.getElementById('dossier-title');
+        const dossierAnimal = document.getElementById('dossier-animal');
+        const dossierText = document.getElementById('dossier-text');
+        const dossierImage = document.getElementById('dossier-image');
+
+        function showDossier(title, animal, text, imgSrc) {
+            dossierTitle.textContent = title;
+            dossierAnimal.textContent = animal;
+            dossierText.textContent = text;
+            dossierImage.src = imgSrc;
+            
+            dossier.classList.remove('hidden');
+            dossier.classList.add('flex');
+            
+            setTimeout(() => {
+                const contentDiv = dossier.querySelector('div');
+                if(contentDiv) {
+                    contentDiv.classList.add('opacity-100', 'scale-100');
+                    contentDiv.classList.remove('opacity-0', 'scale-95');
+                }
+            }, 10);
+        }
+
+        function hideDossier() {
+            const contentDiv = dossier.querySelector('div');
+            if(contentDiv) {
+                contentDiv.classList.add('opacity-0', 'scale-95');
+                contentDiv.classList.remove('opacity-100', 'scale-100');
+            }
+            setTimeout(() => {
+                dossier.classList.add('hidden');
+                dossier.classList.remove('flex');
+            }, 300);
+        }
+
+        // --- 2. 强力修复版：金色粒子跟随特效 ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 自动适配窗口大小，确保画布铺满
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let particlesArray = [];
+        let mouse = { x: null, y: null };
+
+        // 监听鼠标移动
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.clientX; // 使用 clientX/Y 获得绝对坐标
+            mouse.y = event.clientY;
+            // 每次移动增加粒子数量
+            for (let i = 0; i < 2; i++) {
+                particlesArray.push(new Particle());
+            }
+        });
+
+        class Particle {
+            constructor() {
+                this.x = mouse.x;
+                this.y = mouse.y;
+                this.size = Math.random() * 3 + 1; // 粒子大小
+                this.speedX = Math.random() * 2 - 1; // 横向扩散
+                this.speedY = Math.random() * 2 - 1; // 纵向扩散
+                this.life = 1; // 寿命
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.02; // 消散速度
+            }
+            draw() {
+                ctx.globalCompositeOperation = 'lighter'; // 让重叠的金色产生亮光感
+                ctx.fillStyle = `rgba(206, 162, 98, ${this.life})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                // 移除死亡粒子
+                if (particlesArray[i].life <= 0) {
+                    particlesArray.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    </script>
+</body>
+</html>

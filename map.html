@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山海志怪 - 大荒舆图</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #d4d4d4; overflow: hidden; }
+        
+        /* 侧边栏优雅滚动条 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cea262; border-radius: 2px; }
+        
+        /* 金色粒子画布置于最底层 */
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
+
+        /* 地图边框发光特效 */
+        .map-frame { box-shadow: 0 0 40px rgba(206, 162, 98, 0.15), inset 0 0 20px rgba(0,0,0,0.5); }
+        
+        /* 地图变暗蒙版（默认透明，悬停时变暗） */
+        #map-overlay { transition: background-color 0.5s ease; }
+        .dim-map #map-overlay { background-color: rgba(5, 5, 5, 0.75); backdrop-filter: blur(2px); }
+
+        /* 坐标点呼吸动画 */
+        .ping-core { animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping-slow { 75%, 100% { transform: scale(2.5); opacity: 0; } }
+        
+        /* 坐标点悬停放大 */
+        .marker { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .marker:hover { transform: translate(-50%, -50%) scale(1.2) !important; z-index: 50; }
+    </style>
+</head>
+<body class="w-screen h-screen flex relative">
+
+    <!-- 【核心修改】金色粒子特效画布：
+         确保 z-index 为 1，它会浮在 z-0 的地图背景之上，但在 z-20 的文字内容之下 -->
+    <canvas id="particle-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
+
+    <!-- ================= 1. 充满文学性的左侧卷轴 (z-20 确保在粒子之上) ================= -->
+    <!-- 注意：加上 relative 和 z-20 是为了让侧边栏压在粒子上面，保证文字清晰 -->
+    <aside class="w-[30%] h-full border-r border-neutral-800 bg-[#0a0a0a]/90 backdrop-blur-sm z-20 flex flex-col p-10 overflow-y-auto custom-scrollbar relative">
+        
+        <div class="mb-12">
+            <a href="index.html" class="text-sm tracking-[0.3em] text-[#cea262] mb-8 inline-block hover:text-white transition border-b border-[#cea262]/30 pb-1">← 返回序厅</a>
+            <h1 class="text-5xl font-bold tracking-widest text-white mb-4 drop-shadow-lg">大荒舆图</h1>
+            <p class="text-xs text-neutral-500 tracking-[0.2em] uppercase">The Mythological Geography</p>
+        </div>
+
+        <div class="flex-grow space-y-12">
+            <!-- 文学引言 -->
+            <div>
+                <h3 class="text-[#cea262] text-sm tracking-widest mb-4 flex items-center"><span class="w-4 h-[1px] bg-[#cea262] mr-2"></span>题记</h3>
+                <div class="text-neutral-400 text-sm leading-loose border-l-2 border-neutral-800 pl-4 italic">
+                    “地之所载，六合之间，四海之内，照之以日月，经之以星辰，纪之以四时，要之以太岁。神灵所生，其物异形，或夭或寿，唯圣人能通其道。”<br>
+                    <span class="block mt-2 text-neutral-600 not-italic text-xs">—《山海经·海外南经》</span>
+                </div>
+            </div>
+            <!-- 探索指南 -->
+            <div>
+                <h3 class="text-[#cea262] text-sm tracking-widest mb-4 flex items-center"><span class="w-4 h-[1px] bg-[#cea262] mr-2"></span>寻踪指南</h3>
+                <p class="text-neutral-300 text-sm leading-loose mb-4">
+                    本图以《五藏山经》为华夏腹地，外环四海大荒。图上五色枢纽，分别镇守东、南、西、北、中五方神域。
+                </p>
+                <ul class="text-xs text-neutral-500 space-y-3 tracking-wide">
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>北海属水，色黑，极寒之域。</li>
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>东海属木，色青，日出之地。</li>
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>南海属火，色赤，炎热之境。</li>
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-gray-200 mr-2"></span>西海属金，色白，昆仑所在。</li>
+                    <li><span class="inline-block w-2 h-2 bg-yellow-500 mr-2"></span>中海属土，色黄，万物之枢。</li>
+                </ul>
+            </div>
+            
+            <!-- 留白装饰 -->
+            <div class="flex justify-center pt-8 opacity-30">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Taijitu.svg/200px-Taijitu.svg.png" class="w-12 h-12 grayscale filter invert" alt="太极">
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= 2. 右侧高清地图与交互阵列 ================= -->
+    <main class="w-[70%] h-full bg-[#050505] flex items-center justify-center p-8 relative z-10">
+        
+        <!-- [核心] 带有高级边框的地图容器 -->
+        <div id="interactive-map" class="relative w-full max-w-5xl aspect-[16/9] md:aspect-video rounded-xl overflow-hidden map-frame border border-[#cea262]/30 group bg-neutral-900">
+            
+            <!-- 高清底图 (请确保 map-bg.jpg 就在同级目录下) -->
+            <img src="地图.jpg" alt="山海经地图" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+
+            <!-- 动态变暗蒙版 (受 JS 控制) -->
+            <div id="map-overlay" class="absolute inset-0 pointer-events-none z-10"></div>
+
+            <!-- 交互信息面板 (默认隐藏，悬浮时在左上角显现) -->
+            <div id="info-panel" class="absolute top-6 left-6 w-80 bg-[#0a0a0a]/90 backdrop-blur-md border border-[#cea262]/50 rounded-lg p-6 opacity-0 transition-opacity duration-300 pointer-events-none z-30 shadow-2xl transform -translate-y-4">
+                <h3 id="info-title" class="text-2xl font-bold text-white mb-2 tracking-widest">区域名称</h3>
+                <p id="info-desc" class="text-sm text-neutral-400 leading-relaxed mb-4">区域介绍...</p>
+                <div class="border-t border-neutral-800 pt-3 flex items-center justify-between">
+                    <span id="info-stats" class="text-xs text-[#cea262] tracking-widest">收录统计</span>
+                    <span class="text-[10px] bg-neutral-800 text-neutral-400 px-2 py-1 rounded">点击深潜</span>
+                </div>
+            </div>
+
+            <!-- ================= 5 个发光坐标点 ================= -->
+            
+            <!-- 🔵 北海 (圆形 深蓝) -->
+            <!-- top和left用于在地图上定位，你可以自己微调百分比 -->
+            <a href="beihai.html" class="marker absolute top-[20%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-blue-400/50 bg-blue-900/60 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] z-20"
+               onmouseenter="showInfo('北海·大荒北经', '北海之内，有山名曰北极天柜。北方属水，色黑，为极寒之地。有神名烛龙，视为昼，暝为夜。', '收录 8 个核心异兽/方国')" onmouseleave="hideInfo()">
+                <div class="w-3 h-3 bg-blue-400 rounded-full ping-core"></div>
+            </a>
+
+            <!-- 🟢 西海 (圆形 白色/银色) -->
+            <a href="xihai.html" class="marker absolute top-[50%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-gray-300/50 bg-gray-100/30 flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.4)] z-20"
+               onmouseenter="showInfo('西海·大荒西经', '西海之外，有昆仑之丘，西王母所居。西方属金，色白，为日落之地。有刑天舞干戚，奇肱国善飞车。', '收录 15 个核心异兽/方国')" onmouseleave="hideInfo()">
+                <div class="w-3 h-3 bg-gray-200 rounded-full ping-core"></div>
+            </a>
+
+            <!-- 🟡 中海 (方形 黄色) -->
+            <a href="zhonghai.html" class="marker absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-md border border-yellow-500/50 bg-yellow-800/60 flex items-center justify-center shadow-[0_0_25px_rgba(234,179,8,0.6)] z-20"
+               onmouseenter="showInfo('中海·五藏山经', '中海之内，为华夏核心。中央属土，色黄，乃昆仑墟所在，众帝所都。天下名山环列，异兽草木丛生。', '收录 26 条山脉及百兽')" onmouseleave="hideInfo()">
+                <div class="w-4 h-4 bg-yellow-400 rounded-sm ping-core"></div>
+            </a>
+
+            <!-- 🔴 东海 (圆形 青色/绿) -->
+            <a href="donghai.html" class="marker absolute top-[50%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-emerald-400/50 bg-emerald-900/60 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)] z-20"
+               onmouseenter="showInfo('东海·大荒东经', '东海之外有大壑，为少昊之国。东方属木，色青，为日出之地。汤谷上有扶桑，十日所浴。', '收录 10 个核心异兽/方国')" onmouseleave="hideInfo()">
+                <div class="w-3 h-3 bg-emerald-400 rounded-full ping-core"></div>
+            </a>
+
+            <!-- 🟣 南海 (圆形 红色/橙) -->
+            <a href="nanhai.html" class="marker absolute top-[80%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-red-500/50 bg-red-900/60 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.5)] z-20"
+               onmouseenter="showInfo('南海·大荒南经', '南海之外，有羲和之国，女子名羲和，生十日，浴于甘渊。南方属火，色赤，多炎热之地。', '收录 12 个核心异兽/方国')" onmouseleave="hideInfo()">
+                <div class="w-3 h-3 bg-red-500 rounded-full ping-core"></div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- ================= JavaScript 交互与粒子引擎 ================= -->
+    <script>
+        // 1. 地图交互逻辑
+        const mapContainer = document.getElementById('interactive-map');
+        const infoPanel = document.getElementById('info-panel');
+        const infoTitle = document.getElementById('info-title');
+        const infoDesc = document.getElementById('info-desc');
+        const infoStats = document.getElementById('info-stats');
+
+        function showInfo(title, desc, stats) {
+            // 触发地图变暗
+            mapContainer.classList.add('dim-map');
+            // 填充信息并显示面板
+            infoTitle.textContent = title;
+            infoDesc.textContent = desc;
+            infoStats.textContent = stats;
+            infoPanel.classList.remove('opacity-0', '-translate-y-4');
+            infoPanel.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        function hideInfo() {
+            // 恢复地图亮度
+            mapContainer.classList.remove('dim-map');
+            // 隐藏信息面板
+            infoPanel.classList.add('opacity-0', '-translate-y-4');
+            infoPanel.classList.remove('opacity-100', 'translate-y-0');
+        }
+
+        // 2. 原汁原味的金色粒子跟随特效
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray =[];
+        let mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+            for (let i = 0; i < 2; i++) {
+                particlesArray.push(new Particle());
+            }
+        });
+
+        class Particle {
+            constructor() {
+                this.x = mouse.x;
+                this.y = mouse.y;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.life = 1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.03;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(206, 162, 98, ${this.life})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                if (particlesArray[i].life <= 0) {
+                    particlesArray.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

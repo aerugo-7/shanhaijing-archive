@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万物有灵 - 历代图像志</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #d4d4d4; overflow-x: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cea262; border-radius: 2px; }
+        
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
+        
+        /* 异兽卡片高级效果 */
+        .creature-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; filter: grayscale(40%); }
+        .creature-card:hover { filter: grayscale(0%); transform: translateY(-10px); }
+        .creature-card::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(206, 162, 98, 0); transition: all 0.5s; }
+        .creature-card:hover::after { border: 1px solid rgba(206, 162, 98, 0.5); inset: -8px; }
+
+        /* 弹窗动画 */
+        #creature-modal.hidden { display: none; }
+        #creature-modal.flex { display: flex; animation: modal-in 0.4s ease-out forwards; }
+        @keyframes modal-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="w-screen h-screen flex">
+
+   <canvas id="particle-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 20000;"></canvas>
+
+    <!-- ================= 1. 左侧：分类导航 (30%) ================= -->
+    <aside class="w-[25%] md:w-[20%] h-full border-r border-neutral-800 bg-[#0a0a0a]/90 backdrop-blur-sm z-20 flex flex-col p-8 overflow-y-auto custom-scrollbar relative">
+        <div class="mb-12">
+            <a href="index.html" class="text-sm tracking-[0.3em] text-[#cea262] mb-8 inline-block hover:text-white transition border-b border-[#cea262]/30 pb-1">← 返回序厅</a>
+            <h1 class="text-4xl font-bold tracking-widest text-white mb-2">万物有灵</h1>
+            <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase">Visual Archive of Creatures</p>
+        </div>
+
+        <!-- 分类筛选 -->
+        <nav class="space-y-8 mb-12">
+            <button onclick="filterItems('all')" class="filter-btn block text-left text-[#cea262] hover:text-white transition tracking-widest text-lg w-full">全 部 · ALL</button>
+            <button onclick="filterItems('auspicious')" class="filter-btn block text-left text-neutral-500 hover:text-[#cea262] transition tracking-widest text-lg w-full">瑞 兽 · AUSPICIOUS</button>
+            <button onclick="filterItems('fierce')" class="filter-btn block text-left text-neutral-500 hover:text-[#cea262] transition tracking-widest text-lg w-full">凶 兽 · FIERCE</button>
+            <button onclick="filterItems('deity')" class="filter-btn block text-left text-neutral-500 hover:text-[#cea262] transition tracking-widest text-lg w-full">神 祇 · DEITIES</button>
+            <button onclick="filterItems('folklore')" class="filter-btn block text-left text-neutral-500 hover:text-[#cea262] transition tracking-widest text-lg w-full">民 俗 · FOLKLORE</button>
+        </nav>
+
+        <div class="mt-auto text-[10px] text-neutral-600 leading-relaxed italic border-t border-neutral-800 pt-6">
+            “广博神州，诡谲万状。<br>图谱所录，皆先民之精魄。”
+        </div>
+    </aside>
+
+    <!-- ================= 2. 右侧：非对称瀑布流画廊 (70%) ================= -->
+    <main class="w-[75%] md:w-[80%] h-full overflow-y-auto custom-scrollbar p-10 md:p-20 relative bg-[#050505] z-10">
+        <!-- 画廊容器：使用多列布局实现瀑布流 -->
+        <div id="gallery-container" class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+            <!-- 卡片由 JavaScript 动态生成 -->
+        </div>
+    </main>
+
+    <!-- ================= 3. 全屏深度档案弹窗 (Modal) ================= -->
+    <div id="creature-modal" class="fixed inset-0 bg-black/95 z-[10000] hidden items-center justify-center p-4 md:p-12">
+        <div class="bg-neutral-900 border border-[#cea262]/30 w-full max-w-7xl h-full md:h-[85vh] flex flex-col md:flex-row rounded-lg overflow-hidden shadow-2xl relative">
+            
+            <!-- 关闭按钮 -->
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-neutral-500 hover:text-white transition text-3xl z-[10001]">✕</button>
+
+            <!-- 弹窗左侧：图像演变流变区 (占宽 60%) -->
+            <div class="w-full md:w-3/5 h-1/2 md:h-full bg-black flex flex-col p-8 border-b md:border-b-0 md:border-r border-neutral-800">
+                <h4 class="text-[#cea262] text-xs tracking-widest mb-6">〈 历代影像流变 · VISUAL EVOLUTION 〉</h4>
+                <!-- 滚动图片容器 -->
+                <div id="modal-image-gallery" class="flex gap-6 overflow-x-auto custom-scrollbar pb-6 h-full items-center">
+                    <!-- 图片由 JS 动态填充 -->
+                </div>
+                <p class="text-[10px] text-neutral-500 mt-4 tracking-widest text-center">鼠标滚轮可左右滑动查看演变</p>
+            </div>
+
+            <!-- 弹窗右侧：详细文字档案 (占宽 40%) -->
+            <div class="w-full md:w-2/5 h-1/2 md:h-full p-10 flex flex-col overflow-y-auto custom-scrollbar bg-[#0d0d0d]">
+                <span id="modal-type" class="text-amber-600 text-xs tracking-[0.3em] uppercase mb-2">瑞兽</span>
+                <h3 id="modal-title" class="text-5xl font-bold text-white mb-8 tracking-widest border-b border-neutral-800 pb-6">凤凰</h3>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h5 class="text-[#cea262] text-xs mb-3">【核心简述】</h5>
+                        <p id="modal-desc" class="text-neutral-300 leading-loose text-sm font-light"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= 数据定义：志怪完整信息集 =================
+        const creatures = [
+            {
+                id: 'fh',
+                name: '凤凰',
+                type: 'auspicious',
+                typeText: '瑞兽',
+                desc: '凤凰，百鸟之王，出于《山海经·南山经》：“有鸟焉，其状如鸡，五采而文，名曰凤皇，首文曰德，翼文曰义，背文曰礼，膺文曰仁，腹文曰信。是鸟也，饮食自然，自歌自舞，见则天下安宁。”后世演变为龙凤呈祥、天下太平的至高瑞兽。历代图像中，凤凰从汉代砖画的长尾灵禽，逐渐发展为明代版画中羽毛华美、姿态高贵的祥瑞符号。',
+                mainImg: '凤凰5.png', // 使用当代画师图作为主预览
+                images: [
+                    { src: '凤凰1.png', label: '汉代画像石中的凤凰', era: '东汉' },
+                    { src: '凤凰2.png', label: '边景昭《凤凰图》', era: '明代' },
+                    { src: '凤凰3.png', label: '林良《凤凰图》', era: '明代' },
+                    { src: '凤凰4.png', label: '米哈乌·博伊姆《凤凰图》', era: '清代' },
+                    { src: '凤凰5.png', label: '当代画师作品 · 杉泽', era: '当代' }
+                ]
+            },
+            {
+                id: 'bz',
+                name: '白泽',
+                type: 'auspicious',
+                typeText: '瑞兽',
+                desc: '白泽，通晓万物之情的神兽，传说黄帝东巡至海滨遇之，白泽能言，告以天下鬼怪之名凡万一千五百二十种。白泽图曾是古代驱邪禳灾的重要符箓。图像中白泽多作狮身独角、遍体鳞纹、项生鬃毛的瑞兽形象。',
+                mainImg: '白泽4.jpg',
+                images: [
+                    { src: '白泽1.png', label: '敦煌藏经洞彩色画像', era: '唐/五代' },
+                    { src: '白泽2.png', label: '胡文焕本《山海经图》', era: '明代' },
+                    { src: '白泽3.jpg', label: '韩国白泽旗', era: '朝鲜王朝' },
+                    { src: '白泽4.jpg', label: '当代画师作品 · 画画的微子', era: '当代' }
+                ]
+            },
+            {
+                id: 'jwf',
+                name: '九尾狐',
+                type: 'auspicious',
+                typeText: '瑞兽/凶兽',
+                desc: '《山海经·南山经》：“青丘之山，有兽焉，其状如狐而九尾，其音如婴儿，能食人，食者不蛊。”汉唐时期被视为祥瑞，象征王者恩泽。宋代以后逐渐妖化。历代图像中，从汉代画像石的温顺如犬，到明清版画中的妖媚形象，变迁巨大。',
+                mainImg: '九尾狐5.png',
+                images: [
+                    { src: '九尾狐1.png', label: '汉代画像中的九尾狐', era: '东汉' },
+                    { src: '九尾狐2.png', label: '胡文焕本《山海经图》', era: '明代' },
+                    { src: '九尾狐3.png', label: '日本《怪奇鸟兽图卷》', era: '江户时代' },
+                    { src: '九尾狐4.png', label: '歌川国芳《九尾狐》', era: '江户时代' },
+                    { src: '九尾狐5.png', label: '当代画师作品 · 全高', era: '当代' }
+                ]
+            },
+            {
+                id: 'tt',
+                name: '饕餮',
+                type: 'fierce',
+                typeText: '凶兽',
+                desc: '饕餮，《山海经·北次二经》：“钩吾之山，有兽焉，其状如羊身人面，其目在腋下，虎齿人爪，其音如婴儿，名曰狍鸮，是食人。”贪食之兽，商周青铜器上常见其纹。',
+                mainImg: '饕餮4.png',
+                images: [
+                    { src: '饕餮1.png', label: '商周青铜器纹饰', era: '商周' },
+                    { src: '饕餮2.png', label: '先秦器物纹饰', era: '先秦' },
+                    { src: '饕餮3.png', label: '吴任臣《广注》插图', era: '清代' },
+                    { src: '饕餮4.png', label: '当代画师作品 · 千丶阿律', era: '当代' }
+                ]
+            },
+            {
+                id: 'qq',
+                name: '穷奇',
+                type: 'fierce',
+                typeText: '凶兽',
+                desc: '惩善扬恶的凶神，《山海经》记载其状如虎，有翼。或作牛形，猬毛。它是是非颠倒的象征，后世列为“四凶”之一。',
+                mainImg: '穷奇5.png',
+                images: [
+                    { src: '穷奇1.jpg', label: '南阳画像砖牛形穷奇', era: '东汉' },
+                    { src: '穷奇2.jpg', label: '沂南汉墓虎形有翼', era: '东汉' },
+                    { src: '穷奇3.png', label: '《兽谱》牛形穷奇', era: '清代' },
+                    { src: '穷奇4.jpeg', label: '《图书集成》插图', era: '清代' },
+                    { src: '穷奇5.png', label: '当代画师作品 · 啊吧啊吧', era: '当代' }
+                ]
+            },
+            {
+                id: 'dj',
+                name: '帝江/混沌',
+                type: 'fierce',
+                typeText: '凶兽/神祇',
+                desc: '天山神焉，其状如黄囊，赤如丹火，六足四翼，浑敦无面目，是识歌舞。它是空间的混乱，也是歌舞的化身。',
+                mainImg: '帝江4.png',
+                images: [
+                    { src: '帝江1.jpg', label: '胡文焕本《山海经图》', era: '明代' },
+                    { src: '帝江2.jpg', label: '汪绂《山海经存》', era: '清代' },
+                    { src: '帝江3.png', label: '《怪奇鸟兽图卷》', era: '江户时代' },
+                    { src: '帝江4.png', label: '当代画师作品 · 六阳散人', era: '当代' }
+                ]
+            },
+            {
+                id: 'xwm',
+                name: '西王母',
+                type: 'deity',
+                typeText: '神祇',
+                desc: '从早期豹尾虎齿、司天之厉的怪神，演变为雍容高贵的瑶池王母。她掌管不死之药，是昆仑神话的绝对核心。',
+                mainImg: '西王母5.png',
+                images: [
+                    { src: '西王母1.jpg', label: '武氏祠画像石', era: '东汉' },
+                    { src: '西王母2.jpg', label: '《瑶池献寿图》', era: '南宋' },
+                    { src: '西王母3.webp', label: '《瑶池仙庆图》', era: '元代' },
+                    { src: '西王母4.webp', label: '《图绘全像》', era: '明代' },
+                    { src: '西王母5.png', label: '当代画师作品 · 摆烂苏苏', era: '当代' }
+                ]
+            },
+            {
+                id: 'xt',
+                name: '刑天',
+                type: 'deity',
+                typeText: '神祇',
+                desc: '刑天与帝争神，帝断其首。乃以乳为目，以脐为口，操干戚以舞。他是反抗失败而不屈的战神。',
+                mainImg: '刑天3.png',
+                images: [
+                    { src: '刑天1.png', label: '吴任臣《广注》插图', era: '清代' },
+                    { src: '刑天2.png', label: '汪绂《山海经存》', era: '清代' },
+                    { src: '刑天3.png', label: '当代画师作品 · 杉泽', era: '当代' }
+                ]
+            },
+            {
+                id: 'zr',
+                name: '祝融',
+                type: 'deity',
+                typeText: '神祇',
+                desc: '南方火神，兽身人面，乘两龙。后世演化为火德星君。图像中多见其火焰环绕，威风凛凛的姿态。',
+                mainImg: '祝融4.jpg',
+                images: [
+                    { src: '祝融1.png', label: '《绘图广注山海经》', era: '清代' },
+                    { src: '祝融2.png', label: '清彩绘本《山海经图》', era: '清代' },
+                    { src: '祝融3.jpg', label: '当代版画 · 汪宾芳', era: '2024' },
+                    { src: '祝融4.jpg', label: '当代画师作品 · 陈丝雨', era: '2015' }
+                ]
+            },
+            {
+                id: 'jw',
+                name: '精卫',
+                type: 'folklore',
+                typeText: '民俗',
+                desc: '炎帝少女女娃，溺于东海，化为精卫。衔西山木石以填东海。它是坚韧不屈的精神图腾。',
+                mainImg: '精卫5.png',
+                images: [
+                    { src: '精卫1.png', label: '《三才图会》精卫', era: '明代' },
+                    { src: '精卫2.jpg', label: '《怪奇鸟兽图卷》', era: '江户时代' },
+                    { src: '精卫3.png', label: '经典美术片《精卫填海》', era: '20世纪' },
+                    { src: '精卫4.png', label: '画师作品 · 郭晓霞', era: '2006' },
+                    { src: '精卫5.png', label: '当代画师作品 · 辣皎', era: '当代' }
+                ]
+            },
+            {
+                id: 'kf',
+                name: '夸父',
+                type: 'folklore',
+                typeText: '民俗',
+                desc: '夸父与日逐走，道渴而死。弃其杖，化为邓林。这是追求光明、不畏牺牲的宏大悲剧。',
+                mainImg: '夸父3.png',
+                images: [
+                    { src: '夸父1.png', label: '南阳汉画像石', era: '东汉' },
+                    { src: '夸父2.png', label: '《古今图书集成》', era: '清代' },
+                    { src: '夸父3.png', label: '当代画师作品 · ponghing', era: '当代' }
+                ]
+            },
+            {
+                id: 'ls',
+                name: '雷神',
+                type: 'folklore',
+                typeText: '民俗',
+                desc: '龙身人头，鼓其腹。后演变为鹰嘴翼身的雷公形象。它是自然威力的化身，惩恶扬善的神灵。',
+                mainImg: '雷神4.png', // 这里顺延路径逻辑
+                images: [
+                    { src: '雷神1.png', label: '南阳汉画像石', era: '东汉' },
+                    { src: '雷神2.png', label: '民间彩绘绘本', era: '清代' },
+                    { src: '雷神3.png', label: '画师作品 · 陈丝雨', era: '2015' },
+                    { src: '雷神4.png', label: '当代画师作品 · 杉泽', era: '当代' }
+                ]
+            }
+        ];
+
+        // --- 生成画廊卡片 ---
+        const container = document.getElementById('gallery-container');
+
+        function renderGallery(items) {
+            container.innerHTML = '';
+            items.forEach(c => {
+                const card = document.createElement('div');
+                card.className = `creature-card relative break-inside-avoid bg-neutral-900 overflow-hidden group mb-8 rounded-lg`;
+                card.setAttribute('data-type', c.type);
+                card.onclick = () => openModal(c);
+                card.innerHTML = `
+                    <img src="${c.mainImg}" class="w-full h-auto object-cover group-hover:scale-105 transition duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 p-6 flex flex-col justify-end">
+                        <span class="text-[#cea262] text-[10px] tracking-widest uppercase mb-2">${c.typeText}</span>
+                        <h3 class="text-2xl font-bold text-white tracking-widest">${c.name}</h3>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        renderGallery(creatures);
+
+        // --- 筛选功能 ---
+        function filterItems(type) {
+            // 更新按钮样式
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.replace('text-[#cea262]', 'text-neutral-500');
+            });
+            event.target.classList.replace('text-neutral-500', 'text-[#cea262]');
+
+            if (type === 'all') {
+                renderGallery(creatures);
+            } else {
+                renderGallery(creatures.filter(c => c.type === type));
+            }
+        }
+
+        // --- 弹窗逻辑 ---
+        const modal = document.getElementById('creature-modal');
+        function openModal(c) {
+            document.getElementById('modal-title').textContent = c.name;
+            document.getElementById('modal-type').textContent = c.typeText;
+            document.getElementById('modal-desc').textContent = c.desc;
+            
+            const imgContainer = document.getElementById('modal-image-gallery');
+            imgContainer.innerHTML = '';
+            c.images.forEach(img => {
+                imgContainer.innerHTML += `
+                    <div class="flex-shrink-0 w-80 h-full flex flex-col group">
+                        <div class="h-4/5 overflow-hidden border border-neutral-800">
+                            <img src="${img.src}" class="w-full h-full object-contain group-hover:scale-110 transition duration-1000">
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-white text-sm font-bold tracking-widest">${img.label}</p>
+                            <p class="text-[#cea262] text-[10px] uppercase mt-1">时代：${img.era}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- 金色粒子特效 (全局统一) ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        let particles = [];
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX; mouse.y = e.clientY;
+            for (let i = 0; i < 2; i++) particles.push(new Particle());
+        });
+        class Particle {
+            constructor() {
+                this.x = mouse.x; this.y = mouse.y;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.life = 1;
+            }
+            update() { this.x += this.speedX; this.y += this.speedY; this.life -= 0.02; }
+            draw() {
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.fillStyle = `rgba(206, 162, 98, ${this.life})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].life <= 0) { particles.splice(i, 1); i--; }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

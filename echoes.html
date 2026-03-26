@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>衍生 - 现代回响</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #d4d4d4; overflow: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cea262; border-radius: 2px; }
+        
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+        
+        /* 炫酷背景块 */
+        .echo-section { 
+            position: relative; 
+            height: 100vh; 
+            width: 100%; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        
+        /* 背景图片基础样式 */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3; /* 背景变暗 */
+            filter: grayscale(30%) blur(2px);
+            transition: transform 1.5s cubic-bezier(0.2, 1, 0.2, 1);
+        }
+        .echo-section:hover .bg-image { transform: scale(1.05); filter: grayscale(0%) blur(0px); opacity: 0.4; }
+
+        /* 内容卡片样式 */
+        .info-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(206, 162, 98, 0.2);
+            padding: 3rem;
+            max-width: 850px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="flex">
+
+    <!-- 金色粒子特效 -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- 1. 左侧固定导航 (30%) -->
+    <aside class="w-[25%] md:w-[20%] h-full border-r border-neutral-800 bg-[#0a0a0a]/90 backdrop-blur-sm z-50 fixed left-0 top-0 flex flex-col p-8">
+        <div class="mb-12">
+            <a href="index.html" class="text-sm tracking-[0.3em] text-[#cea262] mb-8 inline-block hover:text-white transition border-b border-[#cea262]/30 pb-1">← 返回序厅</a>
+            <h1 class="text-4xl font-bold tracking-widest text-white">衍生</h1>
+            <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase mt-2">Modern Echoes</p>
+        </div>
+
+        <nav class="space-y-6 text-xs tracking-[0.2em] text-neutral-500">
+            <a href="#movies" class="block hover:text-[#cea262] transition">📽️ 银幕幻象 · MOVIES</a>
+            <a href="#animation" class="block hover:text-[#cea262] transition">🎨 霓虹画境 · ANIME</a>
+            <a href="#games" class="block hover:text-[#cea262] transition">🎮 虚拟大荒 · GAMES</a>
+            <a href="#arts" class="block hover:text-[#cea262] transition">🖋️ 纸上新生 · ARTS</a>
+            <a href="#more" class="block hover:text-[#cea262] transition">🧩 多元形态 · MORE</a>
+        </nav>
+
+        <div class="mt-auto text-[11px] text-neutral-600 leading-relaxed italic border-t border-neutral-800 pt-6">
+            “当像素重塑古老志怪，<br>
+            这是独属于我们的数字志异。”
+        </div>
+    </aside>
+
+    <!-- 2. 右侧滚动内容 (80%) -->
+    <main class="w-[75%] md:w-[80%] ml-[25%] md:ml-[20%] h-full overflow-y-auto custom-scrollbar bg-[#050505] relative">
+        
+        <!-- 一、电影板块 -->
+        <section id="movies" class="echo-section">
+            <div class="bg-image" style="background-image: url('神奇动物.jpg');"></div>
+            <div class="info-card">
+                <span class="text-[#cea262] text-xs tracking-widest mb-4 block">SECTION 01 / 电影</span>
+                <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">银幕上的饕餮与麒麟</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="space-y-4">
+                        <img src="长城.png" class="w-full h-32 object-cover border border-[#cea262]/30">
+                        <h4 class="text-white font-bold">《长城》</h4>
+                        <p class="text-xs text-neutral-400 leading-relaxed">张艺谋执导，以饕餮为原型。每六十年降临一次，兽王指挥千万异兽，设定极具震撼力。</p>
+                    </div>
+                    <div class="space-y-4">
+                        <img src="捉妖记.png" class="w-full h-32 object-cover border border-[#cea262]/30">
+                        <h4 class="text-white font-bold">《捉妖记》</h4>
+                        <p class="text-xs text-neutral-400 leading-relaxed">导演许诚毅从《山海经》六足怪获灵感，创造了经典的“胡巴”形象。</p>
+                    </div>
+                    <div class="space-y-4">
+                        <img src="神奇动物.jpg" class="w-full h-32 object-cover border border-[#cea262]/30">
+                        <h4 class="text-white font-bold">《神奇动物》</h4>
+                        <p class="text-xs text-neutral-400 leading-relaxed">JK·罗琳在作品中引入驺吾、麒麟等神兽，融合中国传统绘画元素。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 二、动画板块 -->
+        <section id="animation" class="echo-section">
+            <div class="bg-image" style="background-image: url('大鱼海棠2.png');"></div>
+            <div class="info-card">
+                <span class="text-[#cea262] text-xs tracking-widest mb-4 block">SECTION 02 / 动画</span>
+                <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">此去经年，大鱼海棠</h2>
+                <div class="flex flex-col md:flex-row gap-10">
+                    <div class="md:w-1/2 space-y-6">
+                        <p class="text-sm leading-loose text-neutral-300">
+                            《大鱼海棠》几乎将《山海经》的神祇世界观整体复活：祝融、句芒、后土、白泽... 每一个角色都承载了上古神话在现代审美下的新生。
+                        </p>
+                        <div class="flex gap-4">
+                            <img src="大鱼海棠1.png" class="w-1/2 h-24 object-cover">
+                            <img src="大鱼海棠3.png" class="w-1/2 h-24 object-cover">
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 bg-white/5 p-6 border-l-2 border-[#cea262]">
+                        <h4 class="text-white font-bold mb-4">《大圣归来》中的混沌</h4>
+                        <p class="text-xs text-neutral-400 leading-loose">
+                            反派“混沌”借用《山海经》中“无面目、六足四翼”的设定，重塑为邪恶巨兽，赋予了传统形象更强的戏剧冲突。
+                        </p>
+                        <img src="大圣归来.png" class="mt-4 w-full h-32 object-cover opacity-60">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 三、游戏板块 -->
+        <section id="games" class="echo-section">
+            <div class="bg-image" style="background-image: url('原神.png');"></div>
+            <div class="info-card">
+                <span class="text-[#cea262] text-xs tracking-widest mb-4 block">SECTION 03 / 游戏</span>
+                <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">指尖下的大荒纪元</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="space-y-4">
+                        <h4 class="text-[#cea262] border-b border-[#cea262]/20 pb-2">《原神》· 璃月仙踪</h4>
+                        <p class="text-sm text-neutral-300 leading-relaxed">甘雨之于麒麟、钟离之于圣龙。魈的傩面、申鹤的仙兽... 米哈游通过数字交互，让玩家在璃月港体验鲜活的山海经渊源。</p>
+                        <img src="原神.png" class="w-full h-40 object-cover grayscale hover:grayscale-0 transition">
+                    </div>
+                    <div class="space-y-4">
+                        <h4 class="text-[#cea262] border-b border-[#cea262]/20 pb-2">《仙剑奇侠传》系列</h4>
+                        <p class="text-sm text-neutral-300 leading-relaxed">系列游戏以《山海经》为蓝本。如《仙剑四》中的句芒，造型精准还原了古籍中的木神形象，成为仙侠世界的经典符号。</p>
+                        <img src="仙剑奇侠传.jpg" class="w-full h-40 object-cover grayscale hover:grayscale-0 transition">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 四、艺术与文学板块 -->
+        <section id="arts" class="echo-section">
+            <div class="bg-image" style="background-image: url('杉泽.png');"></div>
+            <div class="info-card">
+                <span class="text-[#cea262] text-xs tracking-widest mb-4 block">SECTION 04 / 艺术</span>
+                <h2 class="text-5xl font-bold text-white mb-8 tracking-tighter">当代画师的重笔描摹</h2>
+                <div class="flex gap-4 mb-8">
+                    <div class="flex-1 text-center">
+                        <img src="杉泽.png" class="w-full h-64 object-cover mb-4">
+                        <span class="text-xs text-neutral-500">杉泽《观山海》</span>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <img src="舍溪.png" class="w-full h-64 object-cover mb-4">
+                        <span class="text-xs text-neutral-500">舍溪《境》</span>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <img src="鹿溟山.png" class="w-full h-64 object-cover mb-4">
+                        <span class="text-xs text-neutral-500">鹿溟山《山海灵》</span>
+                    </div>
+                </div>
+                <p class="text-sm text-center text-neutral-400 italic">“以现代国风技法重新诠释古老志怪，成为文化传播的重要载体。”</p>
+            </div>
+        </section>
+
+        <!-- 五、更多形态板块 -->
+        <section id="more" class="echo-section">
+            <div class="bg-image" style="background-image: url('主题展览.png');"></div>
+            <div class="info-card grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-6">
+                    <h4 class="text-2xl text-white font-bold border-l-4 border-[#cea262] pl-4">多元宇宙的扩张</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <h5 class="text-[#cea262] text-xs uppercase">主题展览与数字艺术</h5>
+                            <p class="text-[11px] text-neutral-400">利用全息投影、VR技术让异兽“活”起来。如“寻迹山海”光影展。</p>
+                        </div>
+                        <div>
+                            <h5 class="text-[#cea262] text-xs uppercase">文创产品与潮玩</h5>
+                            <p class="text-[11px] text-neutral-400">“山海经·神兽”盲盒系列，将传统文化与潮流收藏完美结合。</p>
+                        </div>
+                        <div>
+                            <h5 class="text-[#cea262] text-xs uppercase">音乐与舞台剧</h5>
+                            <p class="text-[11px] text-neutral-400">原创音乐剧以上古神话为蓝本，用现代语言讲述精卫填海的故事。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="主题展览.png" class="w-full h-32 object-cover">
+                    <img src="盲盒.png" class="w-full h-32 object-cover">
+                    <img src="音乐剧.png" class="w-full h-32 object-cover col-span-2">
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-10 text-center text-[10px] text-neutral-600 tracking-[1em] uppercase">
+            END OF ARCHIVE · 万物生生不息
+        </footer>
+    </main>
+
+    <script>
+        // 金色粒子特效代码 (与前几页保持完全一致)
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        let particles = [];
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX; mouse.y = e.clientY;
+            for (let i = 0; i < 2; i++) particles.push(new Particle());
+        });
+        class Particle {
+            constructor() {
+                this.x = mouse.x; this.y = mouse.y;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.life = 1;
+            }
+            update() { this.x += this.speedX; this.y += this.speedY; this.life -= 0.02; }
+            draw() {
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.fillStyle = `rgba(206, 162, 98, ${this.life})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].life <= 0) { particles.splice(i, 1); i--; }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

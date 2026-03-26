@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山海志怪数字档案 - 序厅</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body{
+            font-family: 'Noto Serif SC', serif;
+            background-color: #050505;
+            color: #d4d4d4;
+            overflow: hidden; /* [核心] 隐藏 body 的滚动条，因为我们要分别滚动左右两栏 */
+        }
+        /* [核心] 自定义滚动条样式，让它更纤细、更具设计感 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background:#cea262;
+            border-radius: 2px;
+        }
+        .custom-scrollbar{
+            scrollbar-width: thin;
+            scrollbar-color: #cea262 transparent;
+        }
+        #particle-canvas{
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-layer { position: relative; z-index: 10; }
+        .fade-up { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <canvas id="particle-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
+
+    <!-- ================= [全新结构] 左侧：可独立滚动的侧边栏 (占宽 30%) ================= -->
+    <aside class="w-[15%] h-full fixed left-0 top-0 border-r border-neutral-800 bg-[#0a0a0a] z-20 flex flex-col p-12 overflow-y-auto custom-scrollbar">
+        
+        <!-- 1. 顶部 LOGO / 标题 (固定在顶部) -->
+        <div class="mb-16 sticky top-0 bg-gradient-to-b from-[#0a0a0a] to-transparent pb-4 -mt-12 pt-12">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-[#cea262] mb-4">
+                志怪<br>档案
+            </h1>
+            <p class="text-sm text-neutral-500 tracking-widest uppercase mb-4">Digital Archive of Myth</p>
+        </div>
+
+        <!-- 2. 全局导航菜单 -->
+        <nav class="flex flex-col space-y-6 text-lg tracking-widest mb-24">
+            <a href="index.html" class="flex items-center text-[#cea262] transition duration-300">
+                <span class="w-8 h-[1px] bg-[#cea262] mr-4"></span>序 · 厅
+            </a>
+            <a href="map.html" class="flex items-center text-neutral-500 hover:text-[#cea262] transition duration-300 group">
+                <span class="w-0 h-[1px] bg-[#cea262] mr-0 group-hover:w-8 group-hover:mr-4 transition-all duration-300"></span> 壹 · 版图
+            </a>
+            <a href="gallery.html" class="flex items-center text-neutral-500 hover:text-[#cea262] transition duration-300 group">
+                <span class="w-0 h-[1px] bg-[#cea262] mr-0 group-hover:w-8 group-hover:mr-4 transition-all duration-300"></span> 贰 · 图录
+            </a>
+            <a href="timeline.html" class="flex items-center text-neutral-500 hover:text-[#cea262] transition duration-300 group">
+                <span class="w-0 h-[1px] bg-[#cea262] mr-0 group-hover:w-8 group-hover:mr-4 transition-all duration-300"></span> 叁 · 源流
+            </a>
+            <a href="echoes.html" class="flex items-center text-neutral-500 hover:text-[#cea262] transition duration-300 group">
+                <span class="w-0 h-[1px] bg-[#cea262] mr-0 group-hover:w-8 group-hover:mr-4 transition-all duration-300"></span> 肆 · 衍生
+            </a>
+        </nav>
+
+        <div class="mt-auto text-neutral-600 text-sm leading-relaxed border-l border-neutral-800 pl-4">
+            “天地之大，黎元为本。
+<br>
+            万物之灵，志怪记录。”
+        </div>
+    </aside>
+
+    <!-- ================= [全新结构] 右侧：可独立滚动的画卷区 (占宽 70%) ================= -->
+    <main class="w-[85%] ml-[15%] h-full overflow-y-auto custom-scrollbar content-layer">
+<!-- ================= 1. 第一屏：视觉暴击 (Hero) ================= -->
+        <section id="hero" class="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+            
+            <!-- [绝对不翻车的版本] 弃用 bug 频出的 CSS 背景，改用 img 标签铺底 -->
+            <div class="absolute inset-0 z-0 pointer-events-none">
+                <!-- object-cover 保证图片永远按比例填满屏幕，绝不变形 -->
+                <!-- 【注意】请确保这里的文件名和后缀（jpg/png）与你电脑里完全一致！ -->
+                <img src="main-background.png" alt="首屏背景" class="w-full h-full object-cover opacity-40">
+            </div>
+            
+            <!-- 【黑魔法：底部完美渐变】从底部的纯黑(#050505)，向上平滑渐变到透明 -->
+            <!-- 我稍微加深了底部的黑色过渡，让它和第二屏的衔接如丝般顺滑 -->
+            <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent z-10"></div>
+            
+            <!-- Content / 前景文字 -->
+            <div class="relative z-20 fade-up visible">
+                <p class="text-[#cea262] tracking-[0.5em] text-sm mb-6 uppercase">Digital Archive of Myth</p>
+                <h1 class="text-6xl md:text-8xl font-black text-white tracking-widest mb-8 drop-shadow-2xl">山海志怪</h1>
+                <p class="text-xl text-gray-400 font-light tracking-widest mb-16">丈量先民视界 · 探寻万物有灵</p>
+            </div>
+        </section>
+                <!-- ================= 2. 第二屏：引出【大荒探秘 / 交互地图】 ================= -->
+        <section id="section-map" class="min-h-screen flex items-center py-24 px-8 md:px-24">
+            <!-- 左图右文：非对称布局 -->
+            <div class="flex flex-col md:flex-row items-center gap-16 md:gap-32 w-full">
+                <div class="w-full md:w-1/2 group overflow-hidden relative">
+                    <!-- [需要替换] 这里放《帝禹山河图》或水墨地图的局部截图 -->
+                    <!-- 直接写本地文件名 -->
+                    <img src="地图.jpg" alt="古地图" class="w-full h-[70vh] object-cover opacity-60 img-hover-zoom">
+                    <div class="absolute inset-0 border border-[#cea262]/20 scale-95 group-hover:scale-100 transition duration-700"></div>
+                </div>
+                <div class="w-full md:w-1/2 fade-up">
+                    <span class="text-[#cea262] text-sm tracking-widest mb-4 block">模块 01 / 版图</span>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-8 leading-tight text-white">丈量先民的<br>神话坐标。</h2>
+                    <p class="text-gray-400 leading-loose mb-12 max-w-lg">
+                        以《山海经》五臧山经与海外经为经纬。从南山经到大荒经，我们尝试在残缺的文字中，为你重构三层地理圈层与异兽的出没轨迹。
+                    </p>
+                    <!-- 注意：这里的 href="map.html" 预留了跳转接口 -->
+                    <a href="map.html" class="inline-flex items-center text-[#cea262] border border-[#cea262]/30 px-8 py-3 hover:bg-[#cea262] hover:text-black transition duration-500 tracking-widest text-sm">
+                        踏入大荒版图 <span class="ml-4">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 3. 第三屏：引出【万物有灵 / 异兽图谱】 ================= -->
+        <section id="section-gallery" class="min-h-screen flex items-center justify-center py-24 px-8 relative overflow-hidden">            
+            <div class="w-full max-w-6xl z-10 flex flex-col md:flex-row items-center gap-12">
+                <div class="w-full md:w-1/3 fade-up">
+                    <span class="text-[#cea262] text-sm tracking-widest mb-4 block">模块 02 / 图录</span>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-8 text-white">百鬼夜行，<br>异兽重现。</h2>
+                    <p class="text-gray-400 leading-loose mb-12">精选九尾狐、白泽、饕餮等核心志怪。收录历代典籍古图与当代画师重绘影像，在视觉的流变中照见文化原貌。</p>
+                    <a href="gallery.html" class="inline-flex items-center text-[#cea262] border border-[#cea262]/30 px-8 py-3 hover:bg-[#cea262] hover:text-black transition duration-500 tracking-widest text-sm">
+                        查阅异兽图鉴 <span class="ml-4">→</span>
+                    </a>
+                </div>
+               <!-- 错落式卡片布局 (重叠效果) -->
+            <div class="w-full md:w-2/3 relative h-[600px]">
+                    <!-- 异兽图片 1 (已添加 hover:scale-105) -->
+                <img src="Gemini_Generated_Image_pata1npata1npata.png" class="absolute top-10 left-0 w-64 h-96 object-cover shadow-2xl border border-gray-800 opacity-60 hover:opacity-100 hover:scale-105 hover:z-20 transition duration-500">
+                    <!-- 异兽图片 2 -->
+                <img src="Gemini_Generated_Image_34q9f134q9f134q9.png" class="absolute top-32 left-1/4 w-72 h-[450px] object-cover shadow-2xl border border-[#cea262]/50 z-10 opacity-90 hover:opacity-100 hover:scale-105 transition duration-500">
+                    <!-- 异兽图片 3 (已添加 hover:scale-105) -->
+                 <img src="Gemini_Generated_Image_myfpz5myfpz5myfp.png" class="absolute top-0 right-0 w-64 h-80 object-cover shadow-2xl border border-gray-800 opacity-50 hover:opacity-100 hover:scale-105 hover:z-20 transition duration-500">
+            </div>
+        </section>
+
+        <!-- ================= 4. 第四屏：引出【千古流传 / 博物文库】 ================= -->
+        <section id="section-timeline" class="min-h-screen py-32 px-8 flex flex-col items-center relative overflow-hidden">
+            <!-- 背景巨大隐约繁体字 (从图录移至此处) -->
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[15rem] md:text-[20rem] text-white opacity-5 font-black whitespace-nowrap pointer-events-none select-none z-0">
+                萬物有靈
+            </div>
+
+            <!-- 以下所有内容都加上了 z-10，确保它们在背景字之上 -->
+            <div class="text-center mb-24 fade-up relative z-10">
+                <span class="text-[#cea262] text-sm tracking-widest mb-4 block">模块 03 / 源流</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-white">流传千年的刻痕。</h2>
+            </div>
+            
+            <div class="max-w-5xl w-full flex flex-col md:flex-row gap-20 relative z-10">
+                <!-- 中间的金线隐喻时间轴 -->
+                <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-[#cea262]/50 to-transparent"></div>
+                
+                <div class="flex-1 text-right fade-up">
+                    <h3 class="text-2xl text-white mb-6 border-r-2 border-[#cea262] pr-6">晋代奠基 · 郭璞注</h3>
+                    <div class="text-gray-400 text-lg leading-loose" style="writing-mode: vertical-rl; text-orientation: mixed; height: 250px; float: right; margin-right: 24px;">
+                        “鹿蜀之兽，马质虎文。<br>攘首吟鸣，矫矫腾群。”
+                    </div>
+                </div>
+                <div class="flex-1 text-left pt-24 fade-up">
+                    <h3 class="text-2xl text-white mb-6 border-l-2 border-[#cea262] pl-6">现当代 · 学术考据</h3>
+                    <p class="text-gray-400 leading-loose max-w-sm">
+                        收录近三十年核心期刊文献，以现代人类学、神话学视角，重新解构先民的自然密码。抛弃繁杂卷帙，只展示最精华的学术流变脉络。
+                    </p>
+                    <a href="timeline.html" class="inline-block mt-8 text-[#cea262] border-b border-[#cea262] pb-1 hover:text-white transition tracking-widest text-sm">追溯文献演变 →</a>
+                </div>
+            </div>
+
+            <div class="mt-32 fade-up flex flex-col items-center relative z-10">
+                <div class="w-[1px] h-24 bg-gradient-to-b from-[#cea262]/50 to-transparent mb-4"></div>
+                <div class="w-3 h-3 rounded-full bg-[#cea262] shadow-[0_0_20px_#cea262] animate-pulse"></div>
+                <span class="text-[#cea262]/50 text-xs tracking-[0.8em] mt-6 ml-2">浩瀚残卷 · 未完待续</span>
+            </div>
+
+        </section>  <!-- 这才是唯一、正确的结束标签！ -->
+<!-- ================= 5. 第五屏：引出【衍生世界】与页脚 ================= -->
+        <section id="section-echoes" class="h-screen flex flex-col justify-between pt-24 relative overflow-hidden">
+            
+            <div class="flex-1 flex items-center justify-center w-full max-w-4xl mx-auto px-8 relative">
+
+                <!-- 1. 背景图容器：弃用坑人的 mask，改用最稳定的“物理渐变遮罩”法 -->
+                <!-- items-end 确保容器死死贴在底部 -->
+                <div class="absolute inset-0 z-0 flex items-end justify-center pointer-events-none">
+                    
+                    <!-- 限制图片最大宽度和高度 -->
+                    <div class="relative w-full max-w-[700px] h-[85vh]">
+                        
+                        <!-- 原始图片：保持比例，强制靠底对齐 (object-bottom)，不被裁切 (object-contain) -->
+                        <img src="祝融.png" alt="祝融背景" class="w-full h-full object-contain object-bottom opacity-30">
+
+                        <!-- 【黑魔法：顶部虚化遮罩】从极黑向下渐变到透明 -->
+                        <div class="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-[#050505] to-transparent"></div>
+
+                        <!-- 【黑魔法：左侧虚化遮罩】从极黑向右渐变到透明 -->
+                        <div class="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-[#050505] to-transparent"></div>
+
+                        <!-- 【黑魔法：右侧虚化遮罩】从极黑向左渐变到透明 -->
+                        <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#050505] to-transparent"></div>
+                        
+                    </div>
+                </div>
+
+                <!-- 2. 前景文字容器 (z-10 确保文字永远在图片和遮罩的最上层) -->
+                <div class="relative z-10 text-center fade-up">
+                    <span class="text-[#cea262] text-sm tracking-widest mb-4 block">模块 04 / 衍生</span>
+                    <h2 class="text-4xl md:text-6xl font-bold text-white mb-8 drop-shadow-lg">上古神话在<br>赛博时代的重生。</h2>
+                    <p class="text-gray-400 leading-loose mx-auto max-w-2xl mb-12 drop-shadow-md">
+                        从《大鱼海棠》的祝融，到《原神》的璃月仙兽。当像素与多边形重塑古老志怪，这是独属于我们这个时代的数字志异。
+                    </p>
+                    <a href="echoes.html" class="inline-flex items-center text-white bg-[#cea262]/10 border border-[#cea262] px-10 py-4 hover:bg-[#cea262] hover:text-black transition duration-500 tracking-widest">
+                        探索衍生宇宙 <span class="ml-4">→</span>
+                    </a>
+                </div>
+            </div>
+            <!-- 页脚部分保持不变，它依然是全屏宽度的 -->
+            <footer class="border-t border-gray-900 py-8 text-center text-xs text-gray-600 tracking-widest">
+                <p>&copy; 2026 实验数字档案馆项目 · 山海志怪专题 · 高桐 </p>
+            </footer>
+        </section>
+    </div>
+
+    <!-- ================= JavaScript: 滚动侦测与黄金粒子特效 ================= -->
+    <script>
+        // 1. 简单的滚动浮现动画触发器
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+        // 2. 高级鼠标黄金粒子特效
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray =[];
+        let mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+            // 每次移动生成2个粒子
+            for (let i = 0; i < 2; i++) {
+                particlesArray.push(new Particle());
+            }
+        });
+
+        class Particle {
+            constructor() {
+                this.x = mouse.x;
+                this.y = mouse.y;
+                this.size = Math.random() * 3 + 1; // 粒子大小
+                this.speedX = Math.random() * 2 - 1; // 横向扩散速度
+                this.speedY = Math.random() * 2 - 1; // 纵向扩散速度
+                this.color = '#cea262'; // 雅金色
+                this.life = 1; // 寿命，用于实现淡出
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.02; // 粒子逐渐消失
+            }
+            draw() {
+                ctx.fillStyle = `rgba(206, 162, 98, ${this.life})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                if (particlesArray[i].life <= 0) {
+                    particlesArray.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        
+        animateParticles();
+
+        // 窗口大小改变时重置画布
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
